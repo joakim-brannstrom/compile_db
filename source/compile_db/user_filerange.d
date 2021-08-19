@@ -96,7 +96,7 @@ auto parse(RangeT)(RangeT r, CompileCommandFilter ccFilter) @safe nothrow
 auto addSystemIncludes(RangeT)(RangeT r) @safe nothrow 
         if (is(ElementType!RangeT == ParsedCompileCommand)) {
     static SystemIncludePath[] deduce(CompileCommand cmd, Compiler compiler) @safe nothrow {
-        import dextool.compilation_db.system_compiler : deduceSystemIncludes;
+        import compile_db.system_compiler : deduceSystemIncludes;
 
         try {
             return deduceSystemIncludes(cmd, compiler);

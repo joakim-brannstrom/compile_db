@@ -90,7 +90,7 @@ package void shouldBeIn(T0, T1)(T0 a, T1 b) {
  * is optional. It can be used to distinguish different processing modes of the
  * same input file.
  *
- * Dextool additions.
+ * Additions.
  * The standard do not specify how to treat "directory" when it is a relative
  * path. The logic chosen in dextool is to treat it as relative to the path
  * the compilation database file is read from.
