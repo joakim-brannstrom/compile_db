@@ -255,7 +255,7 @@ private Nullable!CompileCommand toCompileCommand(JSONValue v, AbsoluteCompileDbD
  * order of the strings for their meaning.
  */
 Nullable!CompileCommand toCompileCommand(string directory, string file,
-        string[] command, AbsoluteCompileDbDirectory db_dir, string output) @trusted nothrow {
+        string[] command, AbsoluteCompileDbDirectory db_dir, string output) @safe nothrow {
     // expects that v is a tuple of 3 json values with the keys directory,
     // command, file
 
@@ -275,7 +275,10 @@ Nullable!CompileCommand toCompileCommand(string directory, string file,
             abs_output);
         // dfmt on
     } catch (Exception ex) {
-        logger.error("Unable to parse json: ", ex.msg).collectException;
+        try {
+            logger.error("Unable to parse json: ", ex.msg);
+        } catch(Exception e) {
+        }
     }
 
     return rval;
@@ -288,7 +291,7 @@ Nullable!CompileCommand toCompileCommand(string directory, string file,
  *  db = path to the compilation database file.
  *  out_range = range to write the output to.
  */
-private void parseCommands(T)(string raw_input, CompileDbFile db, ref T out_range) @trusted nothrow {
+private void parseCommands(T)(string raw_input, CompileDbFile db, ref T out_range) @safe nothrow {
     import std.json : parseJSON, JSONException;
 
     static void put(T)(JSONValue v, AbsoluteCompileDbDirectory dbdir, ref T out_range) nothrow {
@@ -320,7 +323,10 @@ private void parseCommands(T)(string raw_input, CompileDbFile db, ref T out_rang
         // out_range takes care of the validation and other security aspects.
         () @trusted { put(json, as_dir, out_range); }();
     } catch (Exception ex) {
-        logger.error("Error while parsing compilation database: " ~ ex.msg).collectException;
+        try {
+            logger.error("Error while parsing compilation database: " ~ ex.msg);
+        } catch(Exception e) {
+        }
     }
 }
 
@@ -750,7 +756,6 @@ ParseFlags parseFlag(CompileCommand cmd, const CompileCommandFilter flag_filter)
     }();
 
     auto pargs = filterPair(skipArgs, cmd.directory, flag_filter.filter);
-
     return ParseFlags(pargs.compiler, pargs.includes, null, pargs.cflags);
 }
 
@@ -760,7 +765,7 @@ ParseFlags parseFlag(CompileCommand cmd, const CompileCommandFilter flag_filter)
  * path = changes relative paths to be relative this parameter
  * data = input to convert
  */
-CompileCommandDB toCompileCommandDB(string data, Path path) @trusted {
+CompileCommandDB toCompileCommandDB(string data, Path path) @safe {
     auto app = appender!(CompileCommand[])();
     data.parseCommands(CompileDbFile(cast(string) path), app);
     return CompileCommandDB(app.data);
@@ -774,7 +779,6 @@ CompileCommandDB fromArgCompileDb(AbsolutePath[] paths) @safe {
 CompileCommandDB fromArgCompileDb(string[] paths) @safe {
     auto app = appender!(CompileCommand[])();
     paths.orDefaultDb.fromFiles(app);
-
     return CompileCommandDB(app.data);
 }
 
