@@ -255,7 +255,7 @@ private Nullable!CompileCommand toCompileCommand(JSONValue v, AbsoluteCompileDbD
  * order of the strings for their meaning.
  */
 Nullable!CompileCommand toCompileCommand(string directory, string file,
-        string[] command, AbsoluteCompileDbDirectory db_dir, string output) nothrow {
+        string[] command, AbsoluteCompileDbDirectory db_dir, string output) @trusted nothrow {
     // expects that v is a tuple of 3 json values with the keys directory,
     // command, file
 
@@ -288,7 +288,7 @@ Nullable!CompileCommand toCompileCommand(string directory, string file,
  *  db = path to the compilation database file.
  *  out_range = range to write the output to.
  */
-private void parseCommands(T)(string raw_input, CompileDbFile db, ref T out_range) nothrow {
+private void parseCommands(T)(string raw_input, CompileDbFile db, ref T out_range) @trusted nothrow {
     import std.json : parseJSON, JSONException;
 
     static void put(T)(JSONValue v, AbsoluteCompileDbDirectory dbdir, ref T out_range) nothrow {
@@ -760,7 +760,7 @@ ParseFlags parseFlag(CompileCommand cmd, const CompileCommandFilter flag_filter)
  * path = changes relative paths to be relative this parameter
  * data = input to convert
  */
-CompileCommandDB toCompileCommandDB(string data, Path path) @safe {
+CompileCommandDB toCompileCommandDB(string data, Path path) @trusted {
     auto app = appender!(CompileCommand[])();
     data.parseCommands(CompileDbFile(cast(string) path), app);
     return CompileCommandDB(app.data);
